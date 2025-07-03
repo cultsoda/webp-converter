@@ -36,14 +36,14 @@
     "nextjs",
     "image-optimization"
   ],
-  "author": "Your Name",
+  "author": "cultsoda",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/mfc-webp-converter.git"
+    "url": "https://github.com/cultsoda/webp-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/mfc-webp-converter/issues"
+    "url": "https://github.com/cultsoda/webp-converter/issues"
   },
-  "homepage": "https://github.com/yourusername/mfc-webp-converter#readme"
+  "homepage": "https://github.com/cultsoda/webp-converter#readme"
 }
