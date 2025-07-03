@@ -1,18 +1,47 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Upload, Download, Settings, FileImage, Trash2, Play, Pause } from 'lucide-react';
 
+interface FileData {
+  id: string;
+  file: File;
+  size: number;
+  preview: string;
+}
+
+interface ConversionResult {
+  original: File;
+  converted: File;
+  originalSize: number;
+  convertedSize: number;
+  compressionRatio: string;
+}
+
+interface Stats {
+  totalFiles: number;
+  totalOriginalSize: number;
+  totalConvertedSize: number;
+  totalSavings: number;
+  compressionRatio: string;
+}
+
 const WebPConverter = () => {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<FileData[]>([]);
   const [converting, setConverting] = useState(false);
-  const [convertedFiles, setConvertedFiles] = useState([]);
+  const [convertedFiles, setConvertedFiles] = useState<ConversionResult[]>([]);
   const [quality, setQuality] = useState(95);
   const [progress, setProgress] = useState(0);
-  const [stats, setStats] = useState(null);
-  const fileInputRef = useRef(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 파일을 WebP로 변환하는 함수
-  const convertToWebP = useCallback((file, quality) => {
-    return new Promise((resolve) => {
+  const convertToWebP = useCallback((file: File, quality: number) => {
+    return new Promise<{
+      original: File;
+      converted: File;
+      originalSize: number;
+      convertedSize: number;
+      compressionRatio: string;
+    }>((resolve) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
@@ -23,6 +52,8 @@ const WebPConverter = () => {
         ctx.drawImage(img, 0, 0);
         
         canvas.toBlob((blob) => {
+          if (!blob) return;
+          
           const convertedFile = new File([blob], 
             file.name.replace(/\.[^/.]+$/, '.webp'), 
             { type: 'image/webp' }
@@ -43,8 +74,10 @@ const WebPConverter = () => {
   }, []);
 
   // 파일 선택 처리
-  const handleFileSelect = useCallback((selectedFiles) => {
-    const imageFiles = Array.from(selectedFiles).filter(file => 
+  const handleFileSelect = useCallback((selectedFiles: FileList | null) => {
+    if (!selectedFiles) return;
+    
+    const imageFiles = Array.from(selectedFiles).filter((file: File) => 
       file.type.startsWith('image/') && !file.name.toLowerCase().endsWith('.webp')
     );
     
@@ -59,13 +92,13 @@ const WebPConverter = () => {
   }, []);
 
   // 드래그앤드롭 처리
-  const handleDrop = useCallback((e) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const droppedFiles = e.dataTransfer.files;
     handleFileSelect(droppedFiles);
   }, [handleFileSelect]);
 
-  const handleDragOver = useCallback((e) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   }, []);
 
